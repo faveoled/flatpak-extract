@@ -1,0 +1,20 @@
+write a python CLI application.
+it has these arguments:
+(filename) - positional, first after script filename, string
+(--outdir) - named argument, string. default: "$(filename-without-extension)-flatpak"
+(--tmpdir) - named argument, string. default: "flatpak-extract-$UUID". generate $UUID randomly.
+Generated default paths should be relative to the current working directory, not absolute.
+the app does the following:
+- makes sure outdir doesn't exist
+- makes sure tmpdir doesn't exist
+- runs CLI commands:
+$ ostree init --repo=$tmpdir --mode=bare-user
+$ ostree static-delta apply-offline --repo=$tmpdir $filename
+- calculates the $commit
+$ ostree checkout --repo=repo -U $commit $outdir
+- deletes $tmpdir at the end and on errors 
+- lists all files in $outdir using this output syntax:
+./$outdir/dir1/dir2/file1.txt
+$commit should be calculated as follows:
+1. traverse all files in $tmpdir/objects and find the file that ends with .commit extension
+2. get the base directory of said file (just a name without path in front of it) and concat it with the file name from above. remove extension
