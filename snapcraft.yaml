@@ -1,5 +1,5 @@
 name: flatpak-extract
-base: core24
+base: core26
 version: '1.0.0'
 summary: S
 description: |
@@ -17,7 +17,18 @@ platforms:
     build-for: [arm64]
 
 parts:
+
+  python-runtime:
+    plugin: nil
+    stage-packages:
+      - libpython3.14-minimal
+      - libpython3.14-stdlib
+      - python3-minimal # for the "python3" symlink
+      - python3.14-minimal
+      - python3.14-venv
+
   flatpak-extract:
+    after: [python-runtime]  
     plugin: dump
     source: ./local
     source-type: local
@@ -33,4 +44,3 @@ apps:
       - home
       - removable-media
       
-
